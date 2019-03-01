@@ -15,6 +15,7 @@
 #define K_DEL 2117294875
 #define K_BS 127
 #define NEWLINE 10
+#define PROMPT_LEN 5
 
 
 typedef struct s_edit
@@ -26,7 +27,8 @@ typedef struct s_edit
     unsigned int    screenrow;
     unsigned int    screencol;
     char            line[4096];
-    int             buffpos;
+    unsigned int    buffpos;
+    unsigned int    printlen;
 } t_edit;
 
 typedef struct dispatch_ctrl
@@ -63,14 +65,18 @@ void disable_raw_mode();
 void move_cursor_right( t_edit *edit);
 void move_cursor_left(t_edit *edit);
 int term_putc(int c);
+void save_cursor_pos();
+void recall_last_cursor_pos();
 
 /*
 ** cursor_helper_1.c
 */
 
 /*
-** cursor_helper_2.c
+** prompt.c
 */
+void put_prompt_line(t_edit *edit);
+void refresh_line_after_prompt(t_edit *edit);
 
 /*
 ** screen.c

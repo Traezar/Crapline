@@ -27,11 +27,13 @@ t_edit *init_terminal_data ()
         perror_exit("Terminal pointed to by $(TERM) is shit\n");
     else if (work == -1)
         perror_exit("Term database is fucked\n");
-    tputs(tgetstr("ti",NULL),0,term_putc);
-    tputs(tgetstr("cd",NULL),0,term_putc);
+    tputs(tgetstr("nw",NULL),0,term_putc);
+    put_prompt_line(ret);
+    //ft_putstr(tgoto(tgetstr("RI",NULL),0,1));
+    tputs(tgetstr("sc",NULL),0,term_putc);
     get_window_size(ret);
     ft_bzero(ret->line,4096);
-    ret->cur_col = 0;
+    ret->cur_col = 5;
     ret->cur_row = 0;
     ret->buffpos = 0;
     return(ret);
