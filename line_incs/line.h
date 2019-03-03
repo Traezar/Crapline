@@ -29,7 +29,16 @@ typedef struct s_edit
     char            line[4096];
     unsigned int    buffpos;
     unsigned int    printlen;
+    int             quote;
+    char *         return_str;
 } t_edit;
+
+typedef struct s_tracker
+{
+    unsigned int sgl:1;
+    unsigned int dbl:1;
+    unsigned int bck:1;
+} t_tracker;
 
 typedef struct dispatch_ctrl
 {
@@ -42,7 +51,8 @@ struct termios g_original;
 /*
 ** line.c
 */
-t_edit *init_terminal_data (void);
+void init_terminal_data (t_edit *line);
+t_edit *init_buffer();
 /*
 ** term_arrow.c
 */
@@ -87,12 +97,15 @@ void get_window_size(t_edit *edit);
 ** stdin_handler.c
 */
 void print_the_buffer(t_edit *edit);
-void read_stdin(t_edit *edit);
+char *read_stdin(t_edit *edit);
+char *complete_buffer(t_edit *edit);
+
+
 
 /*
-** cursor_helper_2.c
+** quotes.c
 */
-
+int quotes_are_closed(char *str);
 /*
 ** error.c
 */
@@ -103,6 +116,7 @@ void perror_exit(char *str);
 */
 void process_input(long num, int len, t_edit *edit);
 void add_to_buffer (int num,t_edit *edit);
+char *complete_the_string(t_edit *edit);
 
 /*
 ** dispatch tables used.

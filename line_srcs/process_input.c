@@ -16,19 +16,17 @@ void process_input(long num,int len, t_edit *edit)
     size_t cursor_to_null;
 
     cast = (int)num;
-   // printf("%d\n", num);
     if (len == 1)
     {
-        if (num != 127)
-        add_to_buffer(num,edit);
-        else
+        if (num != 127 && num != '\n')
+            add_to_buffer(num,edit);
+        else if (num != '\n')
             arrow_backspace(edit);
     }
         
     else if (len == 3)
     {
         i = -1;
-        //printf("\n%ld\n",num); 
         while(++i < 4)
         {
             if (num == g_kctrl[i].value)
@@ -41,9 +39,6 @@ void process_input(long num,int len, t_edit *edit)
         ft_memmove( edit->line + edit->buffpos,edit->line + edit->buffpos + 1,cursor_to_null);
         edit->printlen--;
     }
-    else
-    printf("\nSOMETHIGNSEDLSE\n"); 
-
 }
 
 void add_to_buffer (int num,t_edit *edit)
@@ -57,4 +52,21 @@ void add_to_buffer (int num,t_edit *edit)
     edit->buffpos++;
     edit->cur_col++;
     edit->printlen++;
+}
+
+char *complete_the_string(t_edit *edit)
+{
+    t_edit *cur;
+    char *comp;
+
+    cur = init_buffer();
+    tputs(tgetstr("do",NULL),0,term_putc); //moves down one row same column;
+    tputs(tgetstr("cr",NULL),0,term_putc); //moves cursor to the left margin
+    put_prompt_line(edit);
+    save_cursor_pos();
+    cur->quote = edit->quote;
+    comp =complete_buffer(cur);
+    free(cur->return_str);
+    free(cur);
+    return(ft_strjoin(edit->line,comp));
 }

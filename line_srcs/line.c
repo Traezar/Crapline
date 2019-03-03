@@ -3,38 +3,48 @@
 int main (void)
 {
     t_edit *line;
+    char *ret;
 
-    line = init_terminal_data();
+    line = init_buffer();
+    init_terminal_data(line);
     enable_raw_mode();
-    read_stdin(line);
+    ret = read_stdin(line);
     disable_raw_mode();
-    return 0;
+    printf("\nThe line is : {%s}", ret);
+    free(line);
+        return 0;
+}
+t_edit *init_buffer()
+{
+    t_edit *new;
+
+    new = malloc(sizeof(t_edit));
+        ft_bzero(new->line,4096);
+    new->cur_col = 5;
+    new->cur_row = 0;
+    new->buffpos = 0;
+    new->return_str = ft_strnew(1);
+    ft_bzero(new->return_str,1);
+    return (new);
 }
 
-t_edit *init_terminal_data ()
+void init_terminal_data (t_edit *line)
 {
     char *term;
     char *tmp;
     int work;
-    t_edit *ret;
 
     tmp = NULL;
     if (!(term = getenv("TERM")))
         perror_exit("Environment variable term does not exist\n");
-    ret = malloc(sizeof(t_edit));
-    work = tgetent(term,ret->term);
+    work = tgetent(term,line->term);
     if (work == 0)
         perror_exit("Terminal pointed to by $(TERM) is shit\n");
     else if (work == -1)
         perror_exit("Term database is fucked\n");
     tputs(tgetstr("nw",NULL),0,term_putc);
-    put_prompt_line(ret);
-    //ft_putstr(tgoto(tgetstr("RI",NULL),0,1));
+    put_prompt_line(line);
     tputs(tgetstr("sc",NULL),0,term_putc);
-    get_window_size(ret);
-    ft_bzero(ret->line,4096);
-    ret->cur_col = 5;
-    ret->cur_row = 0;
-    ret->buffpos = 0;
-    return(ret);
+    get_window_size(line);
+    return;
 }
