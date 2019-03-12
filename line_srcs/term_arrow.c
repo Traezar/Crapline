@@ -10,33 +10,48 @@ void arrow_down(t_edit *edit)
 }
 void arrow_left(t_edit *edit)
 {
-         if (edit->buffpos == 0)
+        unsigned int buf;
+        unsigned int printlen;
+
+        buf = edit->array[edit->killzone]->buffpos;
+        printlen = edit->array[edit->killzone]->printlen;
+        if (buf == 0)
         return; 
         edit->cur_col--;
-        edit->buffpos--;
-        //ft_putstr(tgoto(tgetstr("cm",NULL), (edit->cur_col),(edit->cur_row)));
+        edit->array[edit->killzone]->buffpos--;
         ft_putstr(tgetstr("le",NULL));       
 }
 void arrow_right(t_edit *edit)
 {
-        if (edit->buffpos == edit->printlen)
+        unsigned int buf;
+        unsigned int printlen;
+
+        buf = edit->array[edit->killzone]->buffpos;
+        printlen = edit->array[edit->killzone]->printlen;
+        if (buf == printlen)
         return;
         edit->cur_col++;
-        edit->buffpos++;
+        edit->array[edit->killzone]->buffpos++;
         ft_putstr(tgetstr("nd",NULL)); 
 }
 
 void arrow_backspace(t_edit *edit)
 {
         size_t cursor_to_null;
+        unsigned int buf;
+        unsigned int printlen;
+        char *s;
 
-        if (edit->buffpos == 0)
+        s = edit->array[edit->killzone]->line;
+        buf = edit->array[edit->killzone]->buffpos;
+        printlen = edit->array[edit->killzone]->printlen;
+        if (buf == 0)
         return;           
-        edit->buffpos--;
+        edit->array[edit->killzone]->buffpos--;
         edit->cur_col--;    
-        cursor_to_null = ft_strlen(edit->line + edit->buffpos) + 1;
-        ft_memmove( edit->line + edit->buffpos, edit->line + edit->buffpos + 1,cursor_to_null);
+        cursor_to_null = ft_strlen(s + buf) + 1;
+        ft_memmove(s + buf, s + buf + 1,cursor_to_null);
         ft_putstr((tgetstr("le",NULL)));
-        edit->printlen--;
+        edit->array[edit->killzone]->printlen--;
 
 }

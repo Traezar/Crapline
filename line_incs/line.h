@@ -12,25 +12,53 @@
 #define K_DOWN 4348699
 #define K_LEFT 4479771
 #define K_RIGHT 4414235
+#define CTRL_UPK 71696882162459
+#define CTRL_DNK 72796393790235
+#define CTRL_LFK 74995417045787
+#define CTRL_RTK 73895905418011
 #define K_DEL 2117294875
 #define K_BS 127
+#define CTRL_K 11
+#define CTRL_E 5
+#define CTRL_U 21
+#define CTRL_G 7
+#define CTRL_I 6
+#define CTRL_W 23
+#define CTRL_L 12
+#define ALT_F 37574
+#define ALT_G 43458
+#define ALT_K 39627
+#define ALT_L 44226
+#define ALT_O 47299
+#define ALT_P 32975
+#define ALT_Q 37829
+#define ALT_D 8554722
+#define HOME_B 4741915
+#define END_B 4610843
 #define NEWLINE 10
 #define PROMPT_LEN 5
 
+typedef struct s_buffr
+{
+    unsigned int    buffpos;
+    unsigned int    printlen;
+    char            *line;
+} t_buffer;
 
 typedef struct s_edit
 {
     struct termios *original;
-    char *term;
-    unsigned int    cur_row;
+   
+    unsigned int    linemax;
     unsigned int    cur_col;
     unsigned int    screenrow;
     unsigned int    screencol;
-    char            line[4096];
-    unsigned int    buffpos;
-    unsigned int    printlen;
-    int             quote;
-    char *         return_str;
+    unsigned int    quote;
+    unsigned int    killzone;
+    char*           term;
+    char*           return_str;
+    char*           clipboard;
+    t_buffer**      array;    
 } t_edit;
 
 typedef struct s_tracker
@@ -52,7 +80,7 @@ struct termios g_original;
 ** line.c
 */
 void init_terminal_data (t_edit *line);
-t_edit *init_buffer();
+t_edit *init_edit();
 /*
 ** term_arrow.c
 */
@@ -68,6 +96,9 @@ void arrow_backspace(t_edit *edit);
 */
 void enable_raw_mode();
 void disable_raw_mode();
+void print_display(t_edit *edit);
+void display_lines(t_edit *edit);
+void edit_multi_lines(t_edit *edit);
 
 /*
 ** cursor.c
@@ -79,13 +110,9 @@ void save_cursor_pos();
 void recall_last_cursor_pos();
 
 /*
-** cursor_helper_1.c
-*/
-
-/*
 ** prompt.c
 */
-void put_prompt_line(t_edit *edit);
+void put_prompt_line(unsigned int row);
 void refresh_line_after_prompt(t_edit *edit);
 
 /*
@@ -97,8 +124,8 @@ void get_window_size(t_edit *edit);
 ** stdin_handler.c
 */
 void print_the_buffer(t_edit *edit);
-char *read_stdin(t_edit *edit);
-char *complete_buffer(t_edit *edit);
+char *line_edit_body(t_edit *edit);
+
 
 
 
@@ -107,20 +134,44 @@ char *complete_buffer(t_edit *edit);
 */
 int quotes_are_closed(char *str);
 /*
-** error.c
+** newline_handler.c
 */
+char *newline_handler(t_edit *edit);
+void replace_old_array(char **new, char **old);
+void add_to_array(t_edit *edit);
+char *reconstruct_string(t_edit *edit);
+int multi_line_check(t_edit *edit);
 void perror_exit(char *str);
 
 /*
 ** process_input.c
 */
 void process_input(long num, int len, t_edit *edit);
-void add_to_buffer (int num,t_edit *edit);
-char *complete_the_string(t_edit *edit);
+void add_to_killzone (int num,t_edit *edit);
+void delete_from_killzone(t_edit *edit);
 
 /*
-** dispatch tables used.
+** cut_paste_line.c
 */
+void cut_to_endline(t_edit *edit);
+void cut_to_prompt(t_edit *edit);
+void paste_clipboard(t_edit *edit);
+void copy_next_word(t_edit *edit);
+void copy_line(t_edit *edit);
 
 
+/*
+** cut_paste_line.c
+*/
+void move_cursor_right_by(int col,t_edit *edit);
+void move_cursor_left_by(int col,t_edit *edit);
+void move_cursor_to_prompt(t_edit *edit);
+void move_cursor_to_end(t_edit *edit);
+ void move_cursor_to_previous_word(t_edit *edit);
+void move_cursor_to_next_word(t_edit *edit);
+void move_cursor_to_last_word(t_edit *edit);
+void move_cursor_newline(t_edit *edit);
+
+void move_killzone_up(t_edit *edit);
+void move_killzone_down(t_edit *edit);
 #endif
