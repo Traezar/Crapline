@@ -16,7 +16,7 @@ OBJ = *.o
 SRC = line_srcs/line.c line_srcs/quote.c line_srcs/cursor.c line_srcs/screen.c \
 	line_srcs/display_util.c line_srcs/term_arrow.c line_srcs/process_input.c\
 	line_srcs/cut_paste_line.c line_srcs/control_sequences_1.c line_srcs/newline_handler.c\
-	line_srcs/multi_line_cursor.c 
+	line_srcs/multi_line_cursor.c line_srcs/history.c 
 
 HDR = line_includes/line.h 
 

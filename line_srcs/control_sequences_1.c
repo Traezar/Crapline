@@ -79,6 +79,8 @@ void move_cursor_to_next_word(t_edit *edit)
         line = edit->array[edit->killzone]->line;
         s = line[buf + 1];
     }
+    if (ft_isalnum(s) && (s != '\0'))
+        move_cursor_right_by(1,edit);
 
 }
 

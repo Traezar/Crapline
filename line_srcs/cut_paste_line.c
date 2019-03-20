@@ -41,7 +41,6 @@ void cut_to_prompt(t_edit *edit)
     edit->array[edit->killzone]->buffpos = 0;
     edit->cur_col = 0;
     move_cursor_to_prompt(edit);
-    save_cursor_pos();
 }
 
 /*

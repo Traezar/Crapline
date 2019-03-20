@@ -6,7 +6,8 @@ char *ft_readline(void)
     char *ret;
 
     edit = init_edit();
-    init_terminal_data(edit); 
+    init_terminal_data(edit);
+    import_history(edit);
     enable_raw_mode();
     ret = line_edit_body(edit);
     disable_raw_mode();
@@ -24,6 +25,7 @@ t_edit *init_edit()
     new->cur_col = 0;
     new->linemax = 1;
     new->quote = 0;
+    new->buffer_change = 0;
     new->term = NULL;
     new->return_str = ft_strnew(1);
     new->clipboard = ft_strnew(1);
@@ -32,7 +34,9 @@ t_edit *init_edit()
     new->array[0]->printlen = 0;
     new->array[0]->buffpos = 0;
     new->array[1]= NULL;
-  
+    new->hcount = 0;
+    new->hmax = 0;  
+    
     return (new);
 }
 
@@ -50,7 +54,6 @@ void init_terminal_data (t_edit *line)
         perror_exit("Term database is fucked\n");
     get_window_size(line);
     tputs(tgetstr("ce",NULL),0,term_putc);
-    put_prompt_line(0);
     save_cursor_pos();
     return;
 }
@@ -64,22 +67,14 @@ char *line_edit_body(t_edit *edit)
     {
         num = 0;
         print_display(edit);
-        recall_last_cursor_pos();
         len = read(STDIN_FILENO, &num, 6);
         process_input(num, len, edit);
         if ((int)num == '\n')
+        {
+           // printf("The buff is : {%u}\n", edit->array[edit->killzone]->buffpos);
+           // printf("The printlen is : {%u}\n", edit->array[edit->killzone]->printlen);
+           // printf("The cursor is at : {%u}\n", edit->cur_col);
             return(newline_handler(edit));
-        save_cursor_pos();
+        }
     }
 }
-
-int main (void)
-{
-    char *s;
-    
-    s = ft_readline();
-    printf("\nThe line is : {%s}\n",s);
-   // free(s);
-    return(0);
-}
-

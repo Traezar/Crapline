@@ -2,16 +2,14 @@
 
 char *newline_handler(t_edit *edit)
 {
+    edit->killzone = edit->linemax - 1;
     while(multi_line_check(edit) != 0)
     {
-       // ft_putstr(tgetstr("up",NULL));
         add_to_array(edit);
         edit->killzone++;
-        move_cursor_newline(edit);
-        put_prompt_line(2);
-        save_cursor_pos();
         line_edit_body(edit);
     }
+    update_history(edit);
     return (edit->return_str);
 }
 
@@ -40,6 +38,7 @@ void add_to_array(t_edit *edit)
     new[index]->printlen = 0;
     free(edit->array);
     edit->array= new;
+    edit->cur_col = 0;
     return;
 }
 

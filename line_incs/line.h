@@ -55,9 +55,13 @@ typedef struct s_edit
     unsigned int    screencol;
     unsigned int    quote;
     unsigned int    killzone;
+    unsigned int    buffer_change;
+    int             hcount;
+    int             hmax;
+    char **         history;
     char*           term;
     char*           return_str;
-    char*           clipboard;
+    char*           clipboard;  
     t_buffer**      array;    
 } t_edit;
 
@@ -94,6 +98,7 @@ void arrow_backspace(t_edit *edit);
 /*
 ** display_util.c void clear_screen()
 */
+void  align_cursor(t_edit *edit);
 void enable_raw_mode();
 void disable_raw_mode();
 void print_display(t_edit *edit);
@@ -174,4 +179,13 @@ void move_cursor_newline(t_edit *edit);
 
 void move_killzone_up(t_edit *edit);
 void move_killzone_down(t_edit *edit);
+
+/*
+** history.c
+*/
+void read_file_to_array(t_edit *edit, int fd);
+void import_history(t_edit *edit);
+void update_history(t_edit *edit);
+void history_up(t_edit *edit);
+void history_down(t_edit *edit);
 #endif

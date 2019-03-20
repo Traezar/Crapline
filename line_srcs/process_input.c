@@ -2,8 +2,8 @@
 
 t_ctrl g_kctrl[] =
 {
-    {K_UP, arrow_up},
-    {K_DOWN, arrow_down},
+    {K_UP, history_up},
+    {K_DOWN, history_down},
     {K_LEFT, arrow_left},
     {K_RIGHT, arrow_right},
     {K_BS, arrow_backspace},
@@ -89,9 +89,13 @@ void delete_from_killzone(t_edit *edit)
 
     cursor_to_null = 0;
     s = edit->array[edit->killzone]->line;
-    buf =edit->array[edit->killzone]->buffpos;
+    buf = edit->array[edit->killzone]->buffpos;
+    if (buf == edit->array[edit->killzone]->printlen)
+        return;
     cursor_to_null = ft_strlen(s + buf);
-    ft_memmove( s + buf, s + buf + 1,cursor_to_null);
+    ft_memmove( s + buf , s + buf + 1,cursor_to_null);
     edit->array[edit->killzone]->printlen--;
     edit->cur_col--;
+    if (buf == 0)
+        edit->cur_col = 0;
 }

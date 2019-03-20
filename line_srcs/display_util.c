@@ -16,32 +16,64 @@ void disable_raw_mode()
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &g_original);
 }
 
+void  align_cursor(t_edit *edit)
+{
+    unsigned int max = edit->linemax;
+    unsigned int row = edit->killzone;
+    unsigned int base = edit->array[edit->linemax - 1]->printlen;
+    unsigned int len = edit->array[edit->killzone]->buffpos;
+      while (++row < max)
+    {
+        ft_putstr(tgetstr("up",NULL));
+    }
+    if (len > base)
+        while(base < len--)
+            ft_putstr(tgetstr("nd",NULL));
+    else
+         while(base > len++)
+            ft_putstr(tgetstr("le",NULL));
+    edit->cur_col = edit->array[edit->killzone]->buffpos;
+}
+
+
+void move_clear_till_top_and_clear(t_edit *edit)
+{
+    int  printdisplay ;
+
+    printdisplay = (int)edit->linemax - 1 ;
+    
+    while(printdisplay > 0 )
+    {
+         ft_putstr(tgetstr("up",NULL));
+         printdisplay --;
+    } 
+    ft_putstr(tgetstr("cr",NULL));
+    ft_putstr(tgetstr("ce",NULL));
+    ft_putstr(tgetstr("cd",NULL));
+    
+}
+
+
 void print_display(t_edit *edit)
 {
-    unsigned int row;
-    unsigned int col;
+    int row;
+    int col;
     
-    row = edit->linemax;
+    row = 0;
     col = edit->cur_col;
-    while(--row > 0)
-    {
-       
-        ft_putstr(tgetstr("cr",NULL));
-        ft_putstr(tgetstr("ce",NULL));
-        
-        ft_putstr(tgetstr("up",NULL));    
-    }
-  
+    recall_last_cursor_pos();
     ft_putstr(tgetstr("cr",NULL));
-    while (row < edit->linemax)
+    ft_putstr(tgetstr("ce",NULL));
+    ft_putstr(tgetstr("cd",NULL));
+    edit->buffer_change = 0;
+    while (row < ((int)edit->linemax))
     {
-          
-        ft_putstr(tgetstr("cd",NULL));
         put_prompt_line(row);
-        edit->cur_col =1;
+        edit->cur_col =edit->array[edit->killzone]->buffpos;
         tputs(edit->array[row]->line,0,term_putc);
-        row++;
-        if (edit->linemax != 1 && row != edit->linemax)
-            move_cursor_newline(edit);
+        if (++row < (int)edit->linemax)
+            move_cursor_newline(edit);           
     }
+    align_cursor(edit);
+    
 }

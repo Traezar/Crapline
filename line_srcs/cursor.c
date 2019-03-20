@@ -26,10 +26,8 @@ void move_cursor_right(t_edit *edit)
     printlen = edit->array[edit->killzone]->printlen;
     if(buf == printlen)
         return;
-    ft_putstr(tgetstr("nd",NULL));
     edit->cur_col++;
     edit->array[edit->killzone]->buffpos++;
-    save_cursor_pos();
 }
 
 void move_cursor_left(t_edit *edit)
@@ -37,13 +35,13 @@ void move_cursor_left(t_edit *edit)
     unsigned int buf;
 
     buf = edit->array[edit->killzone]->buffpos;
-    if(buf <= 0)
+    if(buf == 0)
     {
         edit->array[edit->killzone]->buffpos = 0;
-        move_cursor_to_prompt(edit);
+        edit->cur_col=0;
+       // move_cursor_to_prompt(edit);
         return;
     }
-    ft_putstr(tgetstr("le",NULL));
     edit->cur_col--;
     edit->array[edit->killzone]->buffpos--;
 }
@@ -52,6 +50,7 @@ void move_cursor_newline(t_edit *edit)
 {
     tputs(tgetstr("do",NULL),0, term_putc);
     tputs(tgetstr("cr",NULL),0, term_putc);
+
     edit->cur_col = 0;
 }
 
